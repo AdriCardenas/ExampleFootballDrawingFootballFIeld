@@ -1,3 +1,3 @@
 package com.example.testmatchfield
 
-class Player(val name: String)
+class Player(val id: String, val name: String)
