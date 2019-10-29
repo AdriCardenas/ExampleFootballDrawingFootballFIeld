@@ -33,18 +33,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val sizePlayer = width / (maxLength + 1)
-
         var currentBarrierId: Int? = null
         for (row in tactic.rows) {
-            currentBarrierId = addPlayerToField(row, currentBarrierId, sizePlayer)
+            currentBarrierId = addPlayerToField(row, currentBarrierId, width, maxLength)
         }
     }
 
     private fun addPlayerToField(
         row: Row,
         currentBarrierId: Int?,
-        sizePlayer: Int
+        width: Int,
+        maxLength: Int
     ): Int {
         val inflater = LayoutInflater.from(this)
         var beforeView: View? = null
@@ -55,15 +54,25 @@ class MainActivity : AppCompatActivity() {
         val viewList = arrayListOf<View>()
         val viewIdList = arrayListOf<Int>()
 
+        val sizePlayerWidth = width / maxLength
+        val sizePlayerHeight = (width * 4) / (maxLength * 3)
+        val sizeShield = sizePlayerWidth * 3 / 4
+
         for (player in row.players) {
 
             val view = inflater!!.inflate(R.layout.player_item, null)
+            view.layoutParams = ConstraintLayout.LayoutParams(sizePlayerWidth, ConstraintLayout.LayoutParams.WRAP_CONTENT)
             view.id = View.generateViewId()
             viewIdList.add(view.id)
 
             view.name.text = player.name
-            view.shield.layoutParams =
-                ConstraintLayout.LayoutParams(sizePlayer, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+
+            view.shield.layoutParams = ConstraintLayout.LayoutParams(sizeShield, sizeShield)
+            (view.shield.layoutParams as ConstraintLayout.LayoutParams).endToEnd = ConstraintSet.PARENT_ID
+            (view.shield.layoutParams as ConstraintLayout.LayoutParams).startToStart = ConstraintSet.PARENT_ID
+            (view.shield.layoutParams as ConstraintLayout.LayoutParams).topToTop = ConstraintSet.PARENT_ID
+            (view.shield.layoutParams as ConstraintLayout.LayoutParams).bottomToTop = view.name.id
+            (view.shield.layoutParams as ConstraintLayout.LayoutParams).verticalChainStyle = ConstraintSet.CHAIN_PACKED
 
             viewList.add(view)
         }
@@ -168,11 +177,10 @@ class MainActivity : AppCompatActivity() {
         players2.add(Player("player3", "Adrian 3"))
         players2.add(Player("player4", "Adrian 4"))
         players2.add(Player("player5", "Adrian 5"))
-        players2.add(Player("player6", "Adrian 6"))
         val row2 = Row(players2)
 
         val players3 = arrayListOf<Player>()
-
+        players3.add(Player("player6", "Adrian 6"))
         players3.add(Player("player7", "Adrian 7"))
         players3.add(Player("player8", "Adrian 8"))
         val row3 = Row(players3)
